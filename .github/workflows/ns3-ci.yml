@@ -27,9 +27,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
-            python3 python3-pip cmake \
+            build-essential python3 python3-pip cmake \
             libsqlite3-dev libgtk-3-dev \
-            qt5-default mercurial git zip
+            mercurial git zip
 
       - name: Cache NS-3
         uses: actions/cache@v4
