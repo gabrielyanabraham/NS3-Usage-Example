@@ -18,15 +18,14 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            g++ python3 python3-pip cmake \
+            build-essential python3 python3-pip cmake \
             libsqlite3-dev libgtk-3-dev \
-            qt5-default mercurial git
+            mercurial git
 
-      # Optional: Cache NS-3 if downloaded/built by configure.sh
       - name: Cache NS-3
         uses: actions/cache@v4
         with:
-          path: ns-3.39  # adjust if your NS-3 directory is different
+          path: ns3
           key: ${{ runner.os }}-ns3-${{ hashFiles('configure.sh') }}
           restore-keys: |
             ${{ runner.os }}-ns3-
