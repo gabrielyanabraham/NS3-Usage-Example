@@ -1,0 +1,52 @@
+name: Build NS3 Usage Example
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            g++ python3 python3-pip cmake \
+            libsqlite3-dev libgtk-3-dev \
+            qt5-default mercurial git
+
+      # Optional: Cache NS-3 if downloaded/built by configure.sh
+      - name: Cache NS-3
+        uses: actions/cache@v4
+        with:
+          path: ns-3.39  # adjust if your NS-3 directory is different
+          key: ${{ runner.os }}-ns3-${{ hashFiles('configure.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-ns3-
+
+      - name: Cache CMake build directory
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Make configure.sh executable
+        run: chmod +x configure.sh
+
+      - name: Run configuration script
+        run: ./configure.sh
+
+      - name: Configure with CMake
+        run: cmake -B build -S .
+
+      - name: Build with CMake
+        run: cmake --build build
