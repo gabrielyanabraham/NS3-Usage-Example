@@ -1,10 +1,10 @@
-name: Build NS3 Usage Example
+name: Build and Release NS3 Usage Example
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -20,12 +20,12 @@ jobs:
           sudo apt install -y \
             build-essential python3 python3-pip cmake \
             libsqlite3-dev libgtk-3-dev \
-            mercurial git
+            mercurial git zip
 
       - name: Cache NS-3
         uses: actions/cache@v4
         with:
-          path: ns3
+          path: ns-3.39
           key: ${{ runner.os }}-ns3-${{ hashFiles('configure.sh') }}
           restore-keys: |
             ${{ runner.os }}-ns3-
@@ -49,3 +49,30 @@ jobs:
 
       - name: Build with CMake
         run: cmake --build build
+
+      - name: Archive build directory
+        run: zip -r build.zip build
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build.zip
+          asset_name: build.zip
+          asset_content_type: application/zip
+
