@@ -15,7 +15,7 @@ To install dependencies on Debian-based Linux:
 
 ```sh
 sudo apt update
-sudo apt install build-essential cmake libgtk-3-dev libxml2-dev
+sudo apt install build-essential cmake libgtk-3-dev libxml2-dev python3-dev ninja-build git
 ```
 
 ---
