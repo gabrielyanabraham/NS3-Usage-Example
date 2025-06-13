@@ -45,8 +45,8 @@ void RawUdpReceiver::HandleRead(ns3::Ptr<ns3::Socket> socket)
     ns3::Ptr<ns3::Packet> packet;
     while ((packet = socket->Recv())) 
     {
-        std::print(std::cout, "Node {} received packet of size {} bytes at time {}s\n",
-           m_node->GetId(), packet->GetSize(), ns3::Simulator::Now().GetSeconds());
+        std::cout << "Node " << m_node->GetId() << " received packet of size " << 
+            packet->GetSize() << " bytes at time " << ns3::Simulator::Now().GetSeconds() << "s" << std::endl;
 
     }
 }
