@@ -93,7 +93,7 @@ cmake -B build -S .
 cmake --build build
 ```
 
-Both methods generate two executables in the `build/` directory:
+Both methods generate an executable in the `build/` directory:
 
 * `udp-raw-socket-sim`: Main simulation
 
