@@ -26,7 +26,6 @@ int main()
     NodeContainer nodes;
     nodes.Create(6); // n0 to n5
 
-    // Set up CSMA links with default 10Mbps/2ms
     CsmaHelper csma;
     csma.SetChannelAttribute("DataRate", StringValue("10Mbps"));
     csma.SetChannelAttribute("Delay", StringValue("2ms"));
@@ -36,13 +35,11 @@ int main()
     NetDeviceContainer link34 = csma.Install(NodeContainer(nodes.Get(3), nodes.Get(4))); // n3-n4
     NetDeviceContainer link35 = csma.Install(NodeContainer(nodes.Get(3), nodes.Get(5))); // n3-n5
 
-    // Set up n2-n3 link with 1.5Mbps/20ms
     CsmaHelper csma23;
     csma23.SetChannelAttribute("DataRate", StringValue("1.5Mbps"));
     csma23.SetChannelAttribute("Delay", StringValue("20ms"));
     NetDeviceContainer link23 = csma23.Install(NodeContainer(nodes.Get(2), nodes.Get(3))); // n2-n3
 
-    // Set up bridges on switches
     BridgeHelper bridge;
     NetDeviceContainer bridgeN2;
     bridgeN2.Add(link01.Get(1)); // n2 to n0
@@ -98,15 +95,14 @@ int main()
     senderN4toN0->SetStartTime(Seconds(4.0));
     senderN4toN0->SetStopTime(Seconds(10.0));
 
-    // Install receiver applications
-    for (const uint32_t i : {0, 1, 5}) { // n0, n1, n5
+    for (const uint32_t i : {0, 1, 4, 5}) 
+    {
         Ptr<sim::RawUdpReceiver> receiver = CreateObject<sim::RawUdpReceiver>(nodes.Get(i));
         nodes.Get(i)->AddApplication(receiver);
         receiver->SetStartTime(Seconds(0.0));
         receiver->SetStopTime(Seconds(10.0));
     }
 
-    // Enable PCAP tracing
     NetDeviceContainer pcapDevices;
     pcapDevices.Add(link01.Get(0)); // n0
     pcapDevices.Add(link12.Get(0)); // n1
@@ -114,6 +110,7 @@ int main()
     pcapDevices.Add(link35.Get(1)); // n5
     csma.EnablePcap("udp-raw-socket", pcapDevices, true);
 
+    Simulator::Stop(Seconds(10.0));
     Simulator::Run();
     Simulator::Destroy();
 
