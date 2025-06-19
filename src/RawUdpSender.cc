@@ -1,4 +1,14 @@
+//===- src/main.cc -===//
+//
+// Part of the NS3-Usage-Example Project, under the GNU GPL License v3.0.
+// See https://github.com/gabrielyanabraham/NS3-Usage-Example/blob/main/LICENSE for license information.
+//
+//===----------------------------------------------------------------------===//
+
+// Headers from this project
 #include "RawUdpSender.hpp"
+
+// Headers from other projects
 #include "ns3/packet.h"
 #include "ns3/udp-header.h"
 #include "ns3/ipv4-header.h"
@@ -87,9 +97,9 @@ void RawUdpSender::SendPacket()
     ipHeader.SetProtocol(17); // UDP
     ipHeader.SetTtl(64);
     ipHeader.SetPayloadSize(payload->GetSize()); // UDP header + payload
-    ipHeader.EnableChecksum();
     ipHeader.SetDontFragment();
     ipHeader.SetIdentification(1234);
+    ipHeader.EnableChecksum();
     payload->AddHeader(ipHeader);
 
     int bytesSent = m_socket->Send(payload, 0);
